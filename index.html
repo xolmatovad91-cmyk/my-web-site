@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muhlisa Browser</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:linear-gradient(135deg,#141e30,#243b55);
+    color:white;
+    overflow:hidden;
+}
+
+.header{
+    text-align:center;
+    font-size:35px;
+    font-weight:bold;
+    padding:20px;
+    background:rgba(0,0,0,0.4);
+    backdrop-filter:blur(10px);
+    animation:slideDown 1s ease;
+}
+
+.search-container{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    padding:20px;
+    animation:fadeIn 1.5s ease;
+}
+
+.search-box{
+    width:500px;
+    height:45px;
+    border-radius:25px;
+    border:none;
+    padding-left:20px;
+    font-size:16px;
+    outline:none;
+    transition:0.3s;
+}
+
+.search-box:focus{
+    box-shadow:0 0 15px #00f2ff;
+}
+
+button{
+    padding:0 20px;
+    border:none;
+    border-radius:25px;
+    cursor:pointer;
+    font-weight:bold;
+    background:#00f2ff;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#00c3cc;
+}
+
+.loader{
+    margin:10px auto;
+    border:5px solid #f3f3f3;
+    border-top:5px solid #00f2ff;
+    border-radius:50%;
+    width:35px;
+    height:35px;
+    animation:spin 1s linear infinite;
+    display:none;
+}
+
+iframe{
+    flex:1;
+    width:100%;
+    border:none;
+    display:none;
+    animation:fadeIn 0.5s ease;
+}
+
+@keyframes spin{
+    0%{transform:rotate(0deg);}
+    100%{transform:rotate(360deg);}
+}
+
+@keyframes slideDown{
+    from{transform:translateY(-50px); opacity:0;}
+    to{transform:translateY(0); opacity:1;}
+}
+
+@keyframes fadeIn{
+    from{opacity:0;}
+    to{opacity:1;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">MUHLISA BROWSER</div>
+
+<div class="search-container">
+    <input 
+    type="text" 
+    id="searchInput" 
+    class="search-box" 
+    placeholder="Qidirish..."
+    onkeydown="if(event.key==='Enter') search()">
+    
+    <button onclick="search()">🔍</button>
+    <button onclick="startVoice()">🎤</button>
+</div>
+
+<div class="loader" id="loader"></div>
+
+<iframe id="resultsFrame"></iframe>
+
+<script>
+function search(){
+    let query = document.getElementById("searchInput").value;
+    let frame = document.getElementById("resultsFrame");
+    let loader = document.getElementById("loader");
+
+    if(query.trim() !== ""){
+        loader.style.display = "block";
+        frame.style.display = "none";
+
+        setTimeout(()=>{
+            frame.src = "https://www.bing.com/search?q=" + encodeURIComponent(query);
+            loader.style.display = "none";
+            frame.style.display = "block";
+        },1000);
+    }
+}
+
+function startVoice(){
+    if('webkitSpeechRecognition' in window){
+        let recognition = new webkitSpeechRecognition();
+        recognition.lang = "uz-UZ";
+        recognition.start();
+
+        recognition.onresult = function(event){
+            let text = event.results[0][0].transcript;
+            document.getElementById("searchInput").value = text;
+            search();
+        };
+    }else{
+        alert("Sizning brauzeringiz ovozli qidirishni qo‘llab-quvvatlamaydi.");
+    }
+}
+</script>
+
+</body>
+</html>
